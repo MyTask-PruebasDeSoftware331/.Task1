@@ -37,4 +37,4 @@ Si desea contribuir en este código, puede contactarse con nosotros a través de
 
 > ### Licencia:
 
- __Pendiente.__
+Este proyecto cuenta con [Licencia](LICENSE.txt) conforme a los términos de la licencia MIT. 

@@ -1,5 +1,3 @@
-# migrations.py
-
 import os
 import sqlite3
 from config import DATABASE_NAME

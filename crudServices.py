@@ -1,9 +1,7 @@
-# crud_services.py
 import bcrypt
 from database import get_db_connection
 from models import Tarea, User
 from datetime import datetime
-
 
 # User services
 def create_user(nombre, password):
@@ -29,18 +27,71 @@ def get_user(nombre):
 def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
 
-# Tarea services
 def create_tarea(titulo, descripcion, etiqueta, venc_date, user_id):
     conn = get_db_connection()
     cur = conn.cursor()
+    status = 'Pendiente'
+    if venc_date and venc_date < datetime.now():
+        status = 'Vencido'
+    venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
     cur.execute('''
-        INSERT INTO TAREAS (titulo, descripcion, etiqueta, venc_date, pendiente, in_progress, completado, archivado, user_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (titulo, descripcion, etiqueta, venc_date, True, False, False, False, user_id))
+        INSERT INTO TAREAS (titulo, descripcion, etiqueta, venc_date, status, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (titulo, descripcion, etiqueta, venc_date_str, status, user_id))
     conn.commit()
     tarea_id = cur.lastrowid
     conn.close()
     return tarea_id
+
+def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT status FROM TAREAS WHERE id = ?', (tarea_id,))
+    current_status = cur.fetchone()[0]
+    status = current_status
+    
+    if venc_date:
+        if venc_date > datetime.now():
+            if status == 'Vencido':
+                status = 'Pendiente'
+        elif status not in ['Completado', 'Archivado']:
+            status = 'Vencido'
+    
+    venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
+    cur.execute('''
+        UPDATE TAREAS 
+        SET titulo = ?, descripcion = ?, etiqueta = ?, venc_date = ?, status = ?
+        WHERE id = ?
+    ''', (titulo, descripcion, etiqueta, venc_date_str, status, tarea_id))
+    conn.commit()
+    conn.close()
+    return cur.rowcount > 0
+
+def update_tarea_status(tarea_id, new_status):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT status, venc_date FROM TAREAS WHERE id = ?', (tarea_id,))
+    current_status, venc_date_str = cur.fetchone()
+
+    if current_status == 'Vencido' and new_status == 'Pendiente':
+        if venc_date_str:
+            venc_date = datetime.strptime(venc_date_str, "%Y-%m-%d %H:%M:%S")
+            if venc_date <= datetime.now():
+                print("La fecha de vencimiento debe ser en el futuro para cambiar el estado a Pendiente.")
+                conn.close()
+                return False
+
+    cur.execute('UPDATE TAREAS SET status = ? WHERE id = ?', (new_status, tarea_id))
+    conn.commit()
+    conn.close()
+    return cur.rowcount > 0
+def list_tareas(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM TAREAS WHERE user_id = ?', (user_id,))
+    tareas_data = cur.fetchall()
+    conn.close()
+    return [Tarea(**t) for t in tareas_data]
 
 def read_tarea(tarea_id):
     conn = get_db_connection()
@@ -52,19 +103,6 @@ def read_tarea(tarea_id):
         return Tarea(**tarea_data)
     return None
 
-def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date, pendiente, in_progress, completado, archivado):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('''
-        UPDATE TAREAS 
-        SET titulo = ?, descripcion = ?, etiqueta = ?, venc_date = ?, 
-            pendiente = ?, in_progress = ?, completado = ?, archivado = ?
-        WHERE id = ?
-    ''', (titulo, descripcion, etiqueta, venc_date, pendiente, in_progress, completado, archivado, tarea_id))
-    conn.commit()
-    conn.close()
-    return cur.rowcount > 0
-
 def delete_tarea(tarea_id):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -72,11 +110,3 @@ def delete_tarea(tarea_id):
     conn.commit()
     conn.close()
     return cur.rowcount > 0
-
-def list_tareas(user_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM TAREAS WHERE user_id = ?', (user_id,))
-    tareas_data = cur.fetchall()
-    conn.close()
-    return [Tarea(**t) for t in tareas_data]

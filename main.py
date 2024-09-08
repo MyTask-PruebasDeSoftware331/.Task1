@@ -23,6 +23,32 @@ def authenticate_user():
         else:
             print("Opción inválida. Por favor, intente de nuevo.")
 
+def select_etiqueta1():
+    print("\nSeleccione etiqueta 1:")
+    print("1. Personal")
+    print("2. Academico")
+    print("3. Trabajo")
+    choice = input("Elija una opción (1-3): ")
+    options = {
+        '1': 'Personal',
+        '2': 'Academico',
+        '3': 'Trabajo'
+    }
+    return options.get(choice, None)
+
+def select_etiqueta2():
+    print("\nSeleccione etiqueta 2:")
+    print("1. Prioridad alta")
+    print("2. Prioridad media")
+    print("3. Prioridad baja")
+    choice = input("Elija una opción (1-3): ")
+    options = {
+        '1': 'Prioridad alta',
+        '2': 'Prioridad media',
+        '3': 'Prioridad baja'
+    }
+    return options.get(choice, None)
+
 def main():
     init_db()
     run_migrations()
@@ -37,7 +63,8 @@ def main():
         if choice == '1':
             titulo = input("Ingrese el título de la tarea: ")
             descripcion = input("Ingrese la descripción de la tarea: ")
-            etiqueta = input("Ingrese la etiqueta de la tarea (opcional): ")
+            etiqueta1 = select_etiqueta1()
+            etiqueta2 = select_etiqueta2()
             venc_date_str = input("Ingrese la fecha de vencimiento (AAAA-MM-DD HH:MM:SS, opcional): ")
             venc_date = None
             if venc_date_str:
@@ -45,13 +72,13 @@ def main():
                     venc_date = datetime.strptime(venc_date_str, "%Y-%m-%d %H:%M:%S")
                 except ValueError:
                     print("Formato de fecha inválido. La tarea se creará sin fecha de vencimiento.")
-            create_tarea(titulo, descripcion, etiqueta, venc_date, user.id)
+            create_tarea(titulo, descripcion, etiqueta1, etiqueta2, venc_date, user.id)
             print("Tarea creada exitosamente.")
 
         elif choice == '2':
             tareas = list_tareas(user.id)
             for tarea in tareas:
-                print(f"{tarea.id}: {tarea.titulo} - Estado: {tarea.status}")
+                print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
 
         elif choice == '3':
             tarea_id = int(input("Ingrese el ID de la tarea a actualizar: "))
@@ -59,7 +86,8 @@ def main():
             if tarea and tarea.user_id == user.id:
                 titulo = input(f"Ingrese el nuevo título ({tarea.titulo}): ") or tarea.titulo
                 descripcion = input(f"Ingrese la nueva descripción ({tarea.descripcion}): ") or tarea.descripcion
-                etiqueta = input(f"Ingrese la nueva etiqueta ({tarea.etiqueta}): ") or tarea.etiqueta
+                etiqueta1 = select_etiqueta1() or tarea.etiqueta1
+                etiqueta2 = select_etiqueta2() or tarea.etiqueta2
                 venc_date_str = input(f"Ingrese la nueva fecha de vencimiento ({tarea.venc_date}, formato AAAA-MM-DD HH:MM:SS): ") or tarea.venc_date
                 venc_date = None
                 if venc_date_str:
@@ -68,7 +96,7 @@ def main():
                     except ValueError:
                         print("Formato de fecha inválido. Se mantendrá la fecha de vencimiento anterior.")
                         venc_date = datetime.strptime(tarea.venc_date, "%Y-%m-%d %H:%M:%S") if tarea.venc_date else None
-                update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date)
+                update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date)
                 print("Tarea actualizada exitosamente.")
             else:
                 print("Tarea no encontrada o no tiene permiso para actualizarla.")

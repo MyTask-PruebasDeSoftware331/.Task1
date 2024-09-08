@@ -27,7 +27,7 @@ def get_user(nombre):
 def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
 
-def create_tarea(titulo, descripcion, etiqueta, venc_date, user_id):
+def create_tarea(titulo, descripcion, etiqueta1, etiqueta2, venc_date, user_id):
     conn = get_db_connection()
     cur = conn.cursor()
     status = 'Pendiente'
@@ -35,15 +35,15 @@ def create_tarea(titulo, descripcion, etiqueta, venc_date, user_id):
         status = 'Vencido'
     venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
     cur.execute('''
-        INSERT INTO TAREAS (titulo, descripcion, etiqueta, venc_date, status, user_id) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (titulo, descripcion, etiqueta, venc_date_str, status, user_id))
+        INSERT INTO TAREAS (titulo, descripcion, etiqueta1, etiqueta2, venc_date, status, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (titulo, descripcion, etiqueta1, etiqueta2, venc_date_str, status, user_id))
     conn.commit()
     tarea_id = cur.lastrowid
     conn.close()
     return tarea_id
 
-def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date):
+def update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('SELECT status FROM TAREAS WHERE id = ?', (tarea_id,))
@@ -60,9 +60,9 @@ def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date):
     venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
     cur.execute('''
         UPDATE TAREAS 
-        SET titulo = ?, descripcion = ?, etiqueta = ?, venc_date = ?, status = ?
+        SET titulo = ?, descripcion = ?, etiqueta1 = ?, etiqueta2 = ?, venc_date = ?, status = ?
         WHERE id = ?
-    ''', (titulo, descripcion, etiqueta, venc_date_str, status, tarea_id))
+    ''', (titulo, descripcion, etiqueta1, etiqueta2, venc_date_str, status, tarea_id))
     conn.commit()
     conn.close()
     return cur.rowcount > 0

@@ -19,7 +19,11 @@ def authenticate_user():
             nombre = input("Ingrese un nuevo nombre de usuario: ")
             password = getpass("Ingrese una nueva contraseña: ")
             user_id = create_user(nombre, password)
-            return get_user(nombre)
+            if user_id is None:
+                print("El nombre de usuario ya existe. Por favor, elija otro.")
+            else:
+                print("Usuario creado exitosamente.")
+                return get_user(nombre)
         else:
             print("Opción inválida. Por favor, intente de nuevo.")
 
@@ -88,7 +92,7 @@ def main():
         elif choice == '2':
             tareas = list_tareas(user.id)
             for tarea in tareas:
-                print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
+                print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Descripcion: {tarea.descripcion}\n,  Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}\n")
 
         elif choice == '3':
             tarea_id = int(input("Ingrese el ID de la tarea a actualizar: "))
@@ -129,7 +133,7 @@ def main():
                         venc_date = datetime.strptime(venc_date_str, "%Y-%m-%d %H:%M:%S")
                         if venc_date > datetime.now():
                             new_status = 'Pendiente'
-                            update_tarea(tarea_id, tarea.titulo, tarea.descripcion, tarea.etiqueta, venc_date)
+                            update_tarea(tarea_id, tarea.titulo, tarea.descripcion, tarea.etiqueta1, tarea.etiqueta2, venc_date)
                             print(f"Fecha de vencimiento actualizada. Estado cambiado a {new_status}.")
                         else:
                             print("La fecha ingresada está en el pasado. La tarea permanece vencida.")

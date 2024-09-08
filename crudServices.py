@@ -2,23 +2,27 @@ import bcrypt
 from database import get_db_connection
 from models import Tarea, User
 from datetime import datetime
+from loggerSetup import db_logger, user_logger
 
 def create_user(nombre, password):
     conn = get_db_connection()
     cur = conn.cursor()
     
+    # Check if the username already exists
     cur.execute('SELECT * FROM USER WHERE nombre = ?', (nombre,))
     existing_user = cur.fetchone()
     
     if existing_user:
         conn.close()
-        return None
+        user_logger.warning(f"Usuario ya existente: {nombre}")
+        return None  # Return None to indicate that the user creation failed
     
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     cur.execute('INSERT INTO USER (nombre, password) VALUES (?, ?)', (nombre, hashed_password))
     conn.commit()
     user_id = cur.lastrowid
     conn.close()
+    user_logger.info(f"Nuevo usuario creado: {nombre}")
     return user_id
 
 def get_user(nombre):
@@ -28,7 +32,9 @@ def get_user(nombre):
     user_data = cur.fetchone()
     conn.close()
     if user_data:
+        user_logger.info(f"User retrieved: {nombre}")
         return User(user_data['id'], user_data['nombre'], user_data['password'])
+    user_logger.warning(f"Intento fallido de login para usuario: {nombre}")
     return None
 
 def verify_password(plain_password, hashed_password):
@@ -48,6 +54,7 @@ def create_tarea(titulo, descripcion, etiqueta1, etiqueta2, venc_date, user_id):
     conn.commit()
     tarea_id = cur.lastrowid
     conn.close()
+    db_logger.info(f"Nueva tarea creada: ID {tarea_id}, Titulo '{titulo}', User ID {user_id}")
     return tarea_id
 
 def update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date):
@@ -72,6 +79,7 @@ def update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date)
     ''', (titulo, descripcion, etiqueta1, etiqueta2, venc_date_str, status, tarea_id))
     conn.commit()
     conn.close()
+    db_logger.info(f"Tarea actualizada: ID {tarea_id}, Titulo '{titulo}'")
     return cur.rowcount > 0
 
 def update_tarea_status(tarea_id, new_status):
@@ -91,6 +99,7 @@ def update_tarea_status(tarea_id, new_status):
     cur.execute('UPDATE TAREAS SET status = ? WHERE id = ?', (new_status, tarea_id))
     conn.commit()
     conn.close()
+
     return cur.rowcount > 0
 def list_tareas(user_id):
     conn = get_db_connection()
@@ -115,8 +124,13 @@ def delete_tarea(tarea_id):
     cur = conn.cursor()
     cur.execute('DELETE FROM TAREAS WHERE id = ?', (tarea_id,))
     conn.commit()
+    rows_affected = cur.rowcount
     conn.close()
-    return cur.rowcount > 0
+    if rows_affected > 0:
+        db_logger.info(f"Tarea removida: ID {tarea_id}")
+    else:
+        db_logger.warning(f"Intento de remover tarea no existente: ID {tarea_id}")
+    return rows_affected > 0
 
 def filtered_search_tareas(user_id, titulo=None, fecha_inicio=None, fecha_fin=None, etiqueta1=None, etiqueta2=None, status=None):
     conn = get_db_connection()

@@ -3,6 +3,7 @@ from crudServices import create_user, get_user, verify_password, create_tarea, r
 from migrations import run_migrations
 from getpass import getpass
 from datetime import datetime
+from loggerSetup import user_logger
 
 def authenticate_user():
     while True:
@@ -12,8 +13,10 @@ def authenticate_user():
             password = getpass("Ingrese su contraseña: ")
             user = get_user(nombre)
             if user and verify_password(password, user.password):
+                user_logger.info(f"Usuario ha iniciado sesión: {nombre}")
                 return user
             else:
+                user_logger.warning(f"Intento de inicio de sesión fallido para el usuario: {nombre}")
                 print("Nombre de usuario o contraseña inválidos.")
         elif choice == '2':
             nombre = input("Ingrese un nuevo nombre de usuario: ")
@@ -22,6 +25,7 @@ def authenticate_user():
             if user_id is None:
                 print("El nombre de usuario ya existe. Por favor, elija otro.")
             else:
+                user_logger.info(f"Nueva cuenta de usuario creada: {nombre}")
                 print("Usuario creado exitosamente.")
                 return get_user(nombre)
         else:
@@ -69,6 +73,7 @@ def main():
 
     user = authenticate_user()
     print(f"Bienvenido, {user.nombre}!")
+    user_logger.info(f"Sesión de usuario iniciada: {user.nombre}")
 
     while True:
         print("\n1. Crear tarea\n2. Listar tareas\n3. Actualizar tarea\n4. Cambiar estado de tarea\n5. Eliminar tarea\n6. Búsqueda con filtros\n7. Salir")
@@ -88,12 +93,13 @@ def main():
                     print("Formato de fecha inválido. La tarea se creará sin fecha de vencimiento.")
             create_tarea(titulo, descripcion, etiqueta1, etiqueta2, venc_date, user.id)
             print("Tarea creada exitosamente.")
+            user_logger.info(f"Usuario {user.nombre} ha creado una nueva tarea")
 
         elif choice == '2':
             tareas = list_tareas(user.id)
             for tarea in tareas:
                 print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Descripcion: {tarea.descripcion}\n,  Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}\n")
-
+                user_logger.info(f"Usuario {user.nombre} ha listado sus tareas")
         elif choice == '3':
             tarea_id = int(input("Ingrese el ID de la tarea a actualizar: "))
             tarea = read_tarea(tarea_id)
@@ -112,8 +118,10 @@ def main():
                         venc_date = datetime.strptime(tarea.venc_date, "%Y-%m-%d %H:%M:%S") if tarea.venc_date else None
                 update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date)
                 print("Tarea actualizada exitosamente.")
+                user_logger.info(f"Usuario {user.nombre} ha actualizado una tarea")
             else:
                 print("Tarea no encontrada o no tiene permiso para actualizarla.")
+            
 
         elif choice == '4':
             tarea_id = int(input("Ingrese el ID de la tarea para cambiar su estado: "))
@@ -147,16 +155,19 @@ def main():
                 
                 if update_tarea_status(tarea_id, new_status):
                     print(f"Estado de la tarea actualizado a: {new_status}")
+                    user_logger.info(f"Usuario {user.nombre} ha cambiado el estado de una tarea")
                 else:
                     print("No se pudo actualizar el estado de la tarea.")
             else:
                 print("Tarea no encontrada o no tiene permiso para actualizarla.")
+            
         elif choice == '5':
             tarea_id = int(input("Ingrese el ID de la tarea a eliminar: "))
             tarea = read_tarea(tarea_id)
             if tarea and tarea.user_id == user.id:
                 delete_tarea(tarea_id)
                 print("Tarea eliminada exitosamente.")
+                user_logger.info(f"Usuario {user.nombre} ha eliminado una tarea")
             else:
                 print("Tarea no encontrada o no tiene permiso para eliminarla.")
 
@@ -176,9 +187,11 @@ def main():
                     print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
             else:
                 print("No se encontraron tareas que coincidan con los criterios de búsqueda.")
+            user_logger.info(f"Usuario {user.nombre} ha realizado una búsqueda filtrada")
 
         elif choice == '7':
             print("¡Hasta luego!")
+            user_logger.info(f"Sesión de usuario finalizada: {user.nombre}")
             break
 
         else:

@@ -3,10 +3,17 @@ from database import get_db_connection
 from models import Tarea, User
 from datetime import datetime
 
-# User services
 def create_user(nombre, password):
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    cur.execute('SELECT * FROM USER WHERE nombre = ?', (nombre,))
+    existing_user = cur.fetchone()
+    
+    if existing_user:
+        conn.close()
+        return None
+    
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     cur.execute('INSERT INTO USER (nombre, password) VALUES (?, ?)', (nombre, hashed_password))
     conn.commit()
@@ -88,7 +95,7 @@ def update_tarea_status(tarea_id, new_status):
 def list_tareas(user_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM TAREAS WHERE user_id = ?', (user_id,))
+    cur.execute('SELECT * FROM TAREAS WHERE user_id = ? AND STATUS != ?', (user_id,'Archivado'))
     tareas_data = cur.fetchall()
     conn.close()
     return [Tarea(**t) for t in tareas_data]

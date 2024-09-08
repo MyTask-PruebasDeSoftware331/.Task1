@@ -29,7 +29,7 @@ En __Linux__:
 
 > ### Cómo usar:
 
-Con el repositorio clonado, se debe abrir la terminal (prompt, shell, cmd, símbolo de sistema, etc), acceder a la carpeta en la que se ubica el archivo y escribir por consola `python main.py` o `python3 main.py` para ejecutar el código principal. Si busca acceder a la base de datos creada, puede escribir por consola `sqlite inf331` ("inf331" corresponde al nombre de la base de datos asignado en el archivo `config.py`)
+Con el repositorio clonado, se debe abrir la terminal (prompt, shell, cmd, símbolo de sistema, etc), acceder a la carpeta en la que se ubica el archivo y escribir por consola `python main.py` o `python3 main.py` para ejecutar el código principal. Si busca acceder a la base de datos creada, puede escribir por consola `sqlite3 inf331` ("inf331" corresponde al nombre de la base de datos asignado en el archivo `config.py`)
 
 > ### Cómo contribuir:
 

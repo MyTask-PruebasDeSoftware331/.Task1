@@ -184,7 +184,7 @@ def main():
             if tareas:
                 print("\nResultados de la búsqueda:")
                 for tarea in tareas:
-                    print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
+                    print(f"ID: {tarea.id}, Título: {tarea.titulo}, Descripcion: {tarea.descripcion}\n, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
             else:
                 print("No se encontraron tareas que coincidan con los criterios de búsqueda.")
             user_logger.info(f"Usuario {user.nombre} ha realizado una búsqueda filtrada")

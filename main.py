@@ -1,5 +1,5 @@
 from database import init_db
-from crudServices import create_user, get_user, verify_password, create_tarea, read_tarea, update_tarea, update_tarea_status, delete_tarea, list_tareas
+from crudServices import create_user, get_user, verify_password, create_tarea, read_tarea, update_tarea, update_tarea_status, delete_tarea, list_tareas, filtered_search_tareas
 from migrations import run_migrations
 from getpass import getpass
 from datetime import datetime
@@ -49,6 +49,16 @@ def select_etiqueta2():
     }
     return options.get(choice, None)
 
+def get_date_input(prompt):
+    while True:
+        date_str = input(prompt)
+        if not date_str:
+            return None
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d")
+        except ValueError:
+            print("Formato de fecha inválido. Utilice AAAA-MM-DD o deje en blanco.")
+
 def main():
     init_db()
     run_migrations()
@@ -57,7 +67,7 @@ def main():
     print(f"Bienvenido, {user.nombre}!")
 
     while True:
-        print("\n1. Crear tarea\n2. Listar tareas\n3. Actualizar tarea\n4. Cambiar estado de tarea\n5. Eliminar tarea\n6. Salir")
+        print("\n1. Crear tarea\n2. Listar tareas\n3. Actualizar tarea\n4. Cambiar estado de tarea\n5. Eliminar tarea\n6. Búsqueda con filtros\n7. Salir")
         choice = input("Elija una opción: ")
 
         if choice == '1':
@@ -147,6 +157,23 @@ def main():
                 print("Tarea no encontrada o no tiene permiso para eliminarla.")
 
         elif choice == '6':
+            titulo = input("Ingrese el título a buscar (o deje en blanco): ")
+            fecha_inicio = get_date_input("Ingrese la fecha de inicio (AAAA-MM-DD) o deje en blanco: ")
+            fecha_fin = get_date_input("Ingrese la fecha de fin (AAAA-MM-DD) o deje en blanco: ")
+            etiqueta1 = select_etiqueta1()
+            etiqueta2 = select_etiqueta2()
+            status = input("Ingrese el estado a buscar (Pendiente, En progreso, Completado, Archivado, Vencido) o deje en blanco: ")
+
+            tareas = filtered_search_tareas(user.id, titulo, fecha_inicio, fecha_fin, etiqueta1, etiqueta2, status)
+            
+            if tareas:
+                print("\nResultados de la búsqueda:")
+                for tarea in tareas:
+                    print(f"ID: {tarea.id}, Título: {tarea.titulo}, Estado: {tarea.status}, Etiqueta 1: {tarea.etiqueta1}, Etiqueta 2: {tarea.etiqueta2}, Vencimiento: {tarea.venc_date or 'No especificado'}")
+            else:
+                print("No se encontraron tareas que coincidan con los criterios de búsqueda.")
+
+        elif choice == '7':
             print("¡Hasta luego!")
             break
 

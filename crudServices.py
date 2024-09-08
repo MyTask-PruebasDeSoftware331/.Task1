@@ -110,3 +110,39 @@ def delete_tarea(tarea_id):
     conn.commit()
     conn.close()
     return cur.rowcount > 0
+
+def filtered_search_tareas(user_id, titulo=None, fecha_inicio=None, fecha_fin=None, etiqueta1=None, etiqueta2=None, status=None):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    query = 'SELECT * FROM TAREAS WHERE user_id = ?'
+    params = [user_id]
+
+    if titulo:
+        query += ' AND titulo LIKE ?'
+        params.append(f'%{titulo}%')
+
+    if fecha_inicio:
+        query += ' AND venc_date >= ?'
+        params.append(fecha_inicio)
+
+    if fecha_fin:
+        query += ' AND venc_date <= ?'
+        params.append(fecha_fin)
+
+    if etiqueta1:
+        query += ' AND etiqueta1 = ?'
+        params.append(etiqueta1)
+
+    if etiqueta2:
+        query += ' AND etiqueta2 = ?'
+        params.append(etiqueta2)
+
+    if status:
+        query += ' AND status = ?'
+        params.append(status)
+
+    cur.execute(query, params)
+    tareas_data = cur.fetchall()
+    conn.close()
+    return [Tarea(**t) for t in tareas_data]

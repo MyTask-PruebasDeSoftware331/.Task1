@@ -24,7 +24,7 @@ En __Windows__:
   
 En __Linux__:
 
-- Python: Escribir por consola `Sudo apt-get install python 3` (nosotros usamos Python 3.9.7)
+- Python: Escribir por consola `Sudo apt-get install python3` (nosotros usamos Python 3.9.7)
 - Sqlite: Escribir por consola `Pip install sqlite3`
 
 > ### Cómo usar:

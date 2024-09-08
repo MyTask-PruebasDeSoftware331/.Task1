@@ -27,7 +27,7 @@ def get_user(nombre):
 def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
 
-def create_tarea(titulo, descripcion, etiqueta, venc_date, user_id):
+def create_tarea(titulo, descripcion, etiqueta1, etiqueta2, venc_date, user_id):
     conn = get_db_connection()
     cur = conn.cursor()
     status = 'Pendiente'
@@ -35,15 +35,15 @@ def create_tarea(titulo, descripcion, etiqueta, venc_date, user_id):
         status = 'Vencido'
     venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
     cur.execute('''
-        INSERT INTO TAREAS (titulo, descripcion, etiqueta, venc_date, status, user_id) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (titulo, descripcion, etiqueta, venc_date_str, status, user_id))
+        INSERT INTO TAREAS (titulo, descripcion, etiqueta1, etiqueta2, venc_date, status, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (titulo, descripcion, etiqueta1, etiqueta2, venc_date_str, status, user_id))
     conn.commit()
     tarea_id = cur.lastrowid
     conn.close()
     return tarea_id
 
-def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date):
+def update_tarea(tarea_id, titulo, descripcion, etiqueta1, etiqueta2, venc_date):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('SELECT status FROM TAREAS WHERE id = ?', (tarea_id,))
@@ -60,9 +60,9 @@ def update_tarea(tarea_id, titulo, descripcion, etiqueta, venc_date):
     venc_date_str = venc_date.strftime("%Y-%m-%d %H:%M:%S") if venc_date else None
     cur.execute('''
         UPDATE TAREAS 
-        SET titulo = ?, descripcion = ?, etiqueta = ?, venc_date = ?, status = ?
+        SET titulo = ?, descripcion = ?, etiqueta1 = ?, etiqueta2 = ?, venc_date = ?, status = ?
         WHERE id = ?
-    ''', (titulo, descripcion, etiqueta, venc_date_str, status, tarea_id))
+    ''', (titulo, descripcion, etiqueta1, etiqueta2, venc_date_str, status, tarea_id))
     conn.commit()
     conn.close()
     return cur.rowcount > 0
@@ -110,3 +110,39 @@ def delete_tarea(tarea_id):
     conn.commit()
     conn.close()
     return cur.rowcount > 0
+
+def filtered_search_tareas(user_id, titulo=None, fecha_inicio=None, fecha_fin=None, etiqueta1=None, etiqueta2=None, status=None):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    query = 'SELECT * FROM TAREAS WHERE user_id = ?'
+    params = [user_id]
+
+    if titulo:
+        query += ' AND titulo LIKE ?'
+        params.append(f'%{titulo}%')
+
+    if fecha_inicio:
+        query += ' AND venc_date >= ?'
+        params.append(fecha_inicio)
+
+    if fecha_fin:
+        query += ' AND venc_date <= ?'
+        params.append(fecha_fin)
+
+    if etiqueta1:
+        query += ' AND etiqueta1 = ?'
+        params.append(etiqueta1)
+
+    if etiqueta2:
+        query += ' AND etiqueta2 = ?'
+        params.append(etiqueta2)
+
+    if status:
+        query += ' AND status = ?'
+        params.append(status)
+
+    cur.execute(query, params)
+    tareas_data = cur.fetchall()
+    conn.close()
+    return [Tarea(**t) for t in tareas_data]

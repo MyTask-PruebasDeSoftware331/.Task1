@@ -41,6 +41,8 @@ Con el repositorio clonado, se debe abrir la terminal (prompt, shell, cmd, símb
 
 Como información adicional, el manejo de fechas utilizados en este trabajo utilizan el formato TimeStamp, por lo que deberán ser ingresados con el formato `AAAA-MM-DD XX:YY:ZZ` para que el programa lo reconozca como una fecha válida.
 
+En la codificación se cuenta con `Logs` de las operaciones, estos registros se pueden encontrar en una carpeta llamada "logs" que se crea tras ejecutar la aplicación.
+
 > ### Cómo contribuir:
 
 Si desea contribuir en este código, puede contactarse con nosotros a través de los correos: `diego.veas@usm.cl`o `carlos.vegamu@usm.cl`

@@ -15,7 +15,7 @@
    
 Para más información con respecto a los requerimientos de este trabajo, acceder al [Documento adjunto.](Tarea1-Requerimientos.docx)
 
-Este repositorio tambien adjunto un documento Excel con los [Ciclos de Pruebas](Registro de Pruebas T1 INF331.xlsx) realizados en este trabajo.
+Este repositorio tambien adjunto un documento Excel con los [Ciclos de Pruebas](Registro-Pruebas-T1-INF331.xlsx) realizados en este trabajo.
     
 > ### Instalación:
   

@@ -1,8 +1,8 @@
 # Task 1: Aplicación para gestionar tareas.
 
 > ### Nombres: 
-- Carlos Vega Muñoz.
-- Diego Veas Bastías.
+- Carlos Vega Muñoz. (Desarrollador)
+- Diego Veas Bastías. (QA)
 
 
 > ### Descripción:
@@ -10,12 +10,14 @@
  Se nos ha solicitado una aplicación dedicada a la gestión de tareas. 
  - El programa deberá ser capaz de implementar el método CRUD para las tareas (crear, leer, actualizar y borrar).
  - Cada tarea debe tener un título, una descripción, una fecha de vencimiento, y una etiqueta que facilite la organización. Se implementará un sistema de búsqueda que pueda filtrar en base a cualquiera de los atributos de las tareas.
- - Se podrá gestionar el estado de las tareas avanzando en las categorias en el siguiente orden: "pendiente", "en progreso", "completado", "archivado"
+ - Se podrá gestionar el estado de las tareas avanzando en las categorias en el siguiente orden: "pendiente", "en progreso", "completado" y finalmente "archivado"
  - Se implementará un sistema de autenticación mediante un nombre de usuario y contraseña. La contraseña estará cifrada utilizando Hashing.
    
 Para más información con respecto a los requerimientos de este trabajo, acceder al [Documento adjunto.](Tarea1-Requerimientos.docx)
 
-Este repositorio tambien adjunto un documento Excel con los [Ciclos de Pruebas](Registro-Pruebas-T1-INF331.xlsx) realizados en este trabajo.
+Este repositorio tambien contiene un documento Excel con los [Ciclos de Pruebas](Registro-Pruebas-T1-INF331.xlsx) realizados en este trabajo.
+
+El flujo de administración del código fuente se realizó mediante la entrategia de Git: __Ship/Show/Ask.__ Elegimos este paradigma porque nos permitía hacer que el desarrollo fuera más rápido y autónomo en la fusión de branches, lo que nos benefició en los ciclos de pruebas. Carlos fue el encargado de la realización del código, el cual fue subiendo en el repositorio inicialmente de forma directa en la rama principal. A medida que se fue avanzando en el desarrollo, se empezó a utilizar una rama alterna. Al momento de hacer las fusiones, Carlos realizaba pull requests las cuales Diego autorizaba (rol de revisor/aprobador), una vez fusionados los cambios se realizaron ciclos de pruebas que nos ofrecian un feedback para conversar sobre el código, esto nos facilitó el proceso para indicar aspectos que necesitaban modificación sin alterar el flujo de trabajo en general. 
     
 > ### Instalación:
   

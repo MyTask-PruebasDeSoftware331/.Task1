@@ -13,7 +13,9 @@
  - Se podrá gestionar el estado de las tareas avanzando en las categorias en el siguiente orden: "pendiente", "en progreso", "completado", "archivado"
  - Se implementará un sistema de autenticación mediante un nombre de usuario y contraseña. La contraseña estará cifrada utilizando Hashing.
    
-Para más información con respecto a los requerimientos de este trabajo, acceder al documento adjunto.
+Para más información con respecto a los requerimientos de este trabajo, acceder al [Documento adjunto.](Tarea1-Requerimientos.docx)
+
+Este repositorio tambien adjunto un documento Excel con los [Ciclos de Pruebas](Registro de Pruebas T1 INF331.xlsx) realizados en este trabajo.
     
 > ### Instalación:
   

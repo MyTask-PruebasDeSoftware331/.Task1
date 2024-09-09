@@ -7,7 +7,13 @@
 
 > ### Descripción:
 
- __Pendiente.__
+ Se nos ha solicitado una aplicación dedicada a la gestión de tareas. 
+ - El programa deberá ser capaz de implementar el método CRUD para las tareas (crear, leer, actualizar y borrar).
+ - Cada tarea debe tener un título, una descripción, una fecha de vencimiento, y una etiqueta que facilite la organización. Se implementará un sistema de búsqueda que pueda filtrar en base a cualquiera de los atributos de las tareas.
+ - Se podrá gestionar el estado de las tareas avanzando en las categorias en el siguiente orden: "pendiente", "en progreso", "completado", "archivado"
+ - Se implementará un sistema de autenticación mediante un nombre de usuario y contraseña. La contraseña estará cifrada utilizando Hashing.
+   
+Para más información con respecto a los requerimientos de este trabajo, acceder al documento adjunto.
     
 > ### Instalación:
   
@@ -30,6 +36,8 @@ En __Linux__:
 > ### Cómo usar:
 
 Con el repositorio clonado, se debe abrir la terminal (prompt, shell, cmd, símbolo de sistema, etc), acceder a la carpeta en la que se ubica el archivo y escribir por consola `python main.py` o `python3 main.py` para ejecutar el código principal. Si busca acceder a la base de datos creada, puede escribir por consola `sqlite3 inf331` ("inf331" corresponde al nombre de la base de datos asignado en el archivo `config.py`)
+
+Como información adicional, el manejo de fechas utilizados en este trabajo utilizan el formato TimeStamp, por lo que deberán ser ingresados con el formato `AAAA-MM-DD XX:YY:ZZ` para que el programa lo reconozca como una fecha válida.
 
 > ### Cómo contribuir:
 
